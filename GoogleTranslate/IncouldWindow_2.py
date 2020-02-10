@@ -54,7 +54,7 @@ class MainForm(object):
         self.result = ''
         self.tip = ''
         self.translate_data = ''
-        # self.history_data = ''
+
         # open Chrome
 
     def openChrome(self):
@@ -104,7 +104,7 @@ class MainForm(object):
                     break
                 else:
                     print("InputError Translate language No \"%s\",Please try again!" % right_lang)
-        l_format = switch(self.dft_language1)
+        l_format = switch(self.dft_language1)   # create url private
         r_format = switch(self.dft_language2)
 
         while 1:

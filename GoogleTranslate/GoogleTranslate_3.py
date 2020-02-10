@@ -9,8 +9,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 
-driver_path = 'chrome_driver for 80-version.exe'    # 80版本
-# driver_path = "chrome_driver for 79-version.exe"    # 79版本
+driver_path1 = 'chrome_driver for 80-version.exe'    # 80版本
+driver_path2 = "chrome_driver for 79-version.exe"    # 79版本
 def changeRgb(*rgb):
     RGB = []
     for r in rgb:
@@ -51,18 +51,22 @@ class MainForm(object):
         self.result = ''
         self.tip = ''
         self.translate_data = ''
-        # self.history_data = ''
-        # open Chrome
+        self.error_version = None
 
+
+        # open Chrome
     def openChrome(self):
         self.flag = 1
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         options.add_argument('disable-infobars')
-        self.driver = webdriver.Chrome(executable_path=driver_path, options=options,desired_capabilities=None)  # chrome_options=options
+        try:
+            self.driver = webdriver.Chrome(executable_path=driver_path2, options=options, desired_capabilities=None)
+        except:
+            self.error_version = 1
+            self.driver = webdriver.Chrome(executable_path=driver_path1, options=options,desired_capabilities=None)  # chrome_options=options
         self.driver.get(self.url)
         self.flag += 1
-
 
     def new_url(self, words, SourceLanguage="auto", TranslateLanguage='en'):
         default_url = "https://translate.google.cn/#view=home&op=translate&sl=auto&tl=en"
@@ -71,16 +75,14 @@ class MainForm(object):
 
     def operatingWeb(self, left_flag=False, right_flag=False):
         # switch language
-        # handle = 1
         l_box = ["Auto", "English", "Chinese", "German", "Russian", "Japanese", "French", "Korea"]
         left_lang, right_lang = '', ''
-        print('Language = [Auto / English / Chinese / German / Russian / Japanese / French / Korea]')
-        print("default: %s → %s" % (self.dft_language1, self.dft_language2))
+        # print('Language = [Auto / English / Chinese / German / Russian / Japanese / French / Korea]')
+        # print("default: %s → %s" % (self.dft_language1, self.dft_language2))
         if left_flag is True:
             while 1:
                 left_lang = input('Input Current language category: ')
                 if left_lang in l_box:
-                    # l_box.remove(left_lang)
                     self.dft_language1 = left_lang
                     break
                 else:
@@ -88,8 +90,7 @@ class MainForm(object):
 
         if right_flag is True:
             while 1:
-                right_lang = input(
-                    'Input Translate language category: ')
+                right_lang = input('Input Translate language category: ')
                 if right_lang == self.dft_language1:
                     print("Duplicate input is invalid")
                 elif right_lang in l_box:
@@ -97,12 +98,16 @@ class MainForm(object):
                     break
                 else:
                     print("InputError Translate language No \"%s\",Please try again!" % right_lang)
-        # l_format = switch(self.dft_language1)     # 生成url专用
+        # l_format = switch(self.dft_language1)     # create url private
         # r_format = switch(self.dft_language2)
 
+        # Mock request
+        if self.flag == 1:
+            sleep(3)  # Wait Chrome start
+        if self.error_version == 1:
+            print("Version Error wait 2s")
+            sleep(2)
         while 1:
-            if self.flag == 1:
-                sleep(3)    # 等待Chrome启动
             words = input('Input you need translate words[%s --> %s](:quit or exit): ' % (self.dft_language1, self.dft_language2))
 
             if words in [":quit", ":exit"]:
@@ -116,13 +121,13 @@ class MainForm(object):
                     if source_text is not None:
                         self.driver.find_element(By.CSS_SELECTOR, '#source').clear()
                 except:
-                    print("第一次进入, source_text = ''")
+                    print("First Enter, source_text = ''")
 
                 self.driver.find_element(By.CSS_SELECTOR, '#source').send_keys(words)   # request web info
 
             try:
                 while 1:
-                    sleep(0.4)
+                    sleep(0.6)
                     self.translate_data = self.driver.find_element(By.CSS_SELECTOR,"span.tlid-translation.translation").text
                     break
             except:

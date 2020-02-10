@@ -1,6 +1,7 @@
 # File Name : get_data
 # @date : 2020-02-07  18:13
 
+# $-$
 from tkinter import *
 from PIL import Image, ImageTk
 from time import sleep
